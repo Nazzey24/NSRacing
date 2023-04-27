@@ -63,7 +63,8 @@ void loop() {
     rBrakePedal = map(ch2,1500,1000,0,100);  //maps Brake Actuation from 0 to full from channel 2
     constrain(rBrakePedal,0,100);
 
-// Got to here with the code, now to populate the COrner State and Behaviours
+// Insert Pedal Maps Here todecide the torque target for the TDUs (Torque Delivery Unit)
+// Got to here with the code, now to populate the Corner State and Behaviours
 
     if ((ch1) <= 1450) {
       r_visco_map = map(ch1,1000,1450,viscosity,0);   //if steering right, map viscosity to turn and take away power from inner (right) wheel
