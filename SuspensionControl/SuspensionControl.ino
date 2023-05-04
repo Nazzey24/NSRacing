@@ -18,6 +18,8 @@ unsigned long  CurrentTime;        // Create 32 bit value for relative time keep
 unsigned long startMillis;         // Create 32 bit value for some time keeper for integration
 uint8_t edition;                   // Counter to ensure datalogger doesnt overlap
 boolean sussys;                    // Boolean value to check and ensure system is ready to run
+uint8_t NSuspState = 0;            // Configurable for Suspension State
+// I do want to use NCornerState to change the through corner balance and compliance
 
 uint16_t FL_pot_pin;   // Pin for FL Rotary Potentiometer
 uint16_t FR_pot_pin;   // Pin for FR Rotary Potentiometer
@@ -36,12 +38,18 @@ const uint8_t RL_inc_pin = 7;  // Pin to increase RL Position
 const uint8_t RR_dec_pin = 8;  // Pin to decrease RR Position
 const uint8_t RR_inc_pin = 9;  // Pin to increase RR Position
 
-const uint8_t roll_multi = 10; // Multiplier for roll stiffness
-const uint8_t pitch_multi = 5; // Multiplier for pitch stiffness
-const uint8_t heave_multi = 20;// Multiplier for heave stiffness
+const uint8_t roll_k = 4;         // Multiplier for roll stiffness
+const uint8_t pitch_k = 6;        // Multiplier for pitch stiffness
+const uint8_t heave_k= 4;         // Multiplier for heave stiffness
+const uint8_t roll_k_driver = 2;  // Multiplier for roll stiffness driver
+const uint8_t pitch_k_driver = 2; // Multiplier for pitch stiffness driver
+const uint8_t roll_d = 3;         // Multiplier for roll damping
+const uint8_t pitch_d = 6;        // Multiplier for pitch damping
+const uint8_t roll_d_driver = 2;  // Multiplier for roll damping driver
+const uint8_t pitch_d_driver = 2; // Multiplier for pitch damping driver
 
-const uint8_t p = 1;           // Multiplier for the Spring Stiffness
-const uint8_t d = 4;           // Multiplier for the Damping Effect
+const uint8_t p = 1;           // Multiplier for the Single Spring Stiffness
+const uint8_t d = 2;           // Multiplier for the Single Damping Effect
 
 uint8_t oldXp = 0;
 uint8_t oldXpf = 0;
@@ -68,9 +76,6 @@ const int8_t k1 = 55;              // Create constant value for Constant for Pre
 const int8_t k2 = 10;              // Create constant value for Constant for Current Raw Value
 const int8_t k3 = 35;              // Create constant value for Constant for Previous Raw Value
 const int8_t k4 = 100;             // Create constant value for Constant for Divisor to make other coefficients percentages
-
-const int8_t kPP = 150;            // Assign Proportional constant for pitch
-const int8_t kPR = 100;            // Assign Proportional constant for roll
 
 void setup() {
   pinMode(FL_pot_pin, INPUT);
@@ -100,10 +105,13 @@ void setup() {
 }
 
 void loop() {
-  if (sussys == true) {
+  
+  if (sussys == true) && NSuspState = 0 {
     digitalWrite(LED_BUILTIN, HIGH);   // turn the LED on (HIGH is the voltage level)
     mpu.update();
-
+    NSuspState = 1
+  }
+  
     // make a string for assembling the data to log:
     String dataString = "";
 
@@ -130,7 +138,7 @@ void loop() {
     RR_target = RR_target - (roll_multi * xpf) - (pitch_multi * ypf);
 
     // Compute errors, PD terms and reactions
-    int FL_ang = analogRead(A0);
+    int FL_ang = analogRead(A0); 
     int FL_error = FL_target - FL_ang;
     int FL_react = FL_error * p + (FL_error - FL_prev_error) * d;
     FL_prev_error = FL_error;
