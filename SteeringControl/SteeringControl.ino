@@ -9,17 +9,15 @@ boolean BUsenYawforaUOSteer = 1
 
 
 // Dynamic Vehicle Parameters
-int8_t pitch;                    //create integer for pitch of vehicle
-int8_t roll;                     //create integer for roll of vehicle
-int8_t yaw;                      //create integer for yaw of vehicle
-int8_t nTurnLorR;
-uint16_t wheelbase = 380;   //create integer for the wheelbase of the vehicle
+int8_t pitch;                    // create integer for pitch of vehicle
+int8_t roll;                     // create integer for roll of vehicle
+int8_t yaw;                      // create integer for yaw of vehicle
+int8_t nTurnLorR;                // extract the sign from the steering wheel -ve left, +ve right
+uint16_t wheelbase = 380;        // create integer for the wheelbase of the vehicle
 
 // Intergers for Independent Variable Steering
 int ch1_pwm;   //create integer for ch1 delta
-int ang;       //create integer angle
-int theta;     //create integer for inside angle
-int phi;       //create integer for outside angle
+float ang,theta,phi;       //create floating point number for angle, inside angle and outside angle
 int theta_pwm; //create integer for inside angle pwm
 int phi_pwm;   //create integer for outside angle pwm
 int l_steer;   //create integer left steering
@@ -65,5 +63,8 @@ if (BUsenYawforaUOSteer = 1){
 else{
   angMeasured = gLat;
 }
+
+// calc for aUOSteer
+// once calc is generated, will then be downstream used to close the loop to maximise rotation
 
 }

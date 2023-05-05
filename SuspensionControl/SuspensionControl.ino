@@ -15,12 +15,12 @@ const uint8_t pitch_d_driver = 2; // Multiplier for pitch damping driver
 const uint8_t p = 1;           // Multiplier for the Single Spring Stiffness
 const uint8_t d = 2;           // Multiplier for the Single Damping Effect
 
-uint8_t oldXp = 0;
-uint8_t oldXpf = 0;
-uint8_t oldYp = 0;
-uint8_t oldYpf = 0;
+uint8_t oldgLong = 0;
+uint8_t oldfgLong = 0;
+uint8_t oldgLat = 0;
+uint8_t oldfgLat = 0;
 
-uint16_t FL_setpoint = 1500;
+uint16_t FL_setpoint = 1''500;
 uint16_t FR_setpoint = 1500;
 uint16_t RL_setpoint = 1500;
 uint16_t RR_setpoint = 1500;
@@ -44,20 +44,25 @@ const int8_t k4 = 100;             // Create constant value for Constant for Div
 void setup() {
 }
 
-void loop() {
+void loop() { 
   if (sussys == true) && NSuspState = 0 {
     digitalWrite(LED_BUILTIN, HIGH);   // turn the LED on (HIGH is the voltage level)
     NSuspState = 1
   }
     // Filtered Values
-    xpf = oldXp * (k1 / k4) + xp * (k2 / k4) + oldXpf * (k3 / k4);  //roll
-    ypf = oldYp * (k1 / k4) + yp * (k2 / k4) + oldYpf * (k3 / k4);  //pitch
+    fgLong = oldgLong * (k1 / k4) + gLong * (k2 / k4) + oldfgLong * (k3 / k4);  //pitch
+    fgLat = oldgLat * (k1 / k4) + gLat * (k2 / k4) + oldfgLat * (k3 / k4);      //roll
+    
+    oldgLong = gLong;
+    oldfgLong = fgLong;
+    oldgLat = gLat;
+    oldfgLat = fgLat;
 
     // Create Target Values for all four corners
-    FL_target = FL_target + (roll_multi * xpf) + (pitch_multi * ypf);
-    FR_target = FR_target - (roll_multi * xpf) + (pitch_multi * ypf);
-    RL_target = RL_target + (roll_multi * xpf) - (pitch_multi * ypf);
-    RR_target = RR_target - (roll_multi * xpf) - (pitch_multi * ypf);
+    FL_target = FL_target + (roll_multi * fgLong) + (pitch_multi * fgLat);
+    FR_target = FR_target - (roll_multi * fgLong) + (pitch_multi * fgLat);
+    RL_target = RL_target + (roll_multi * fgLong) - (pitch_multi * fgLat);
+    RR_target = RR_target - (roll_multi * fgLong) - (pitch_multi * fgLat);
 
     // Compute errors, PD terms and reactions
     int FL_ang = analogRead(A0); 

@@ -53,8 +53,8 @@ uint16_t RR_pot_pin;   // Pin for RR Rotary Potentiometer
 int8_t nPitch;                     // Create value for Raw Pitch
 int8_t nRoll;                      // Create value for Raw Roll
 int8_t nYaw;                       // Create value for Raw Yaw
-float gLong, gLat, gVert;          // Create floating point variable values for longitudinal, lateral and vertical acceleration
-float fnPitch, fnRoll;                    // Create floating point variable values
+float gLong, gLat, gVert;          // Create floating point variable values for acceleration
+float fnPitch, fnRoll;                    // Create floating point variable values for the filtered values
 
 void setup() {
   pinMode(FL_pot_pin, INPUT);
@@ -113,12 +113,12 @@ void loop() {
     // Account for Gravity
     gVert = gVert - 1;
     
-    ch1 = pulseIn(ch1_pin, HIGH); //channel 1 value based on pin D1 input, expecting High values with no timeout
-    ch2 = pulseIn(ch2_pin, HIGH); //channel 2 value based on pin D2 input, expecting High values with no timeout
-    ch3 = pulseIn(ch3_pin, HIGH); //channel 3 value based on pin D3 input, expecting High values with no timeout
-    ch4 = pulseIn(ch4_pin, HIGH); //channel 4 value based on pin D4 input, expecting High values with no timeout 
-    ch5 = pulseIn(ch5_pin, HIGH); //channel 5 value based on pin D5 input, expecting High values with no timeout
-    ch6 = pulseIn(ch6_pin, HIGH); //channel 6 value based on pin D6 input, expecting High values with no timeout 
+    ch1 = pulseIn(ch1_pin, HIGH); //channel 1 value based on pin D1 input
+    ch2 = pulseIn(ch2_pin, HIGH); //channel 2 value based on pin D2 input
+    ch3 = pulseIn(ch3_pin, HIGH); //channel 3 value based on pin D3 input
+    ch4 = pulseIn(ch4_pin, HIGH); //channel 4 value based on pin D4 input
+    ch5 = pulseIn(ch5_pin, HIGH); //channel 5 value based on pin D5 input
+    ch6 = pulseIn(ch6_pin, HIGH); //channel 6 value based on pin D6 input
 
     rThrottlePedal = map(ch2,1500,2000,0,100);  //maps Throttle Actuation from 0 to full from channel 2
     constrain(rThrottlePedal,0,100);
