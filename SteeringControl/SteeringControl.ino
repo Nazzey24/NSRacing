@@ -5,12 +5,15 @@
 
 
 const uint8_t aWheelFMap = 120;
+boolean BUsenYawforaUOSteer = 1
+
 
 // Dynamic Vehicle Parameters
 int8_t pitch;                    //create integer for pitch of vehicle
 int8_t roll;                     //create integer for roll of vehicle
 int8_t yaw;                      //create integer for yaw of vehicle
-const int16_t wheelbase = 380;   //create integer for the wheelbase of the vehicle
+int8_t nTurnLorR;
+uint16_t wheelbase = 380;   //create integer for the wheelbase of the vehicle
 
 // Intergers for Independent Variable Steering
 int ch1_pwm;   //create integer for ch1 delta
@@ -45,4 +48,22 @@ void loop() {
     l_steer = ch1;
     r_steer = ch1;
 }
+if (aSteeringWheel < -1){
+  nTurnLorR = -1
+}
+elseif (aSteeringWheel > 1){
+  nTurnLorR = 1
+}
+else {
+  nTurnLorR = 0
+}
+
+// Calculated Channels
+if (BUsenYawforaUOSteer = 1){
+  angMeasured = nYaw;
+}
+else{
+  angMeasured = gLat;
+}
+
 }

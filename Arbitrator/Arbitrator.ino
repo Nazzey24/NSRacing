@@ -50,11 +50,11 @@ uint16_t RL_pot_pin;   // Pin for RL Rotary Potentiometer
 uint16_t RR_pot_pin;   // Pin for RR Rotary Potentiometer
 
 // Variables to store data from MPU-6050  // Note: Use of int to reduce sensitivity of data causing steady state oscillation due to over sensitivity
-int8_t xp;                         // Create value for Raw Pitch
-int8_t yp;                         // Create value for Raw Roll
-int8_t zp;                         // Create value for Raw Yaw
-float xa, ya, za;                  // Create floating point variable values for longitudinal, lateral and vertical acceleration
-float xpf, ypf;                    // Create floating point variable values
+int8_t nPitch;                     // Create value for Raw Pitch
+int8_t nRoll;                      // Create value for Raw Roll
+int8_t nYaw;                       // Create value for Raw Yaw
+float gLong, gLat, gVert;          // Create floating point variable values for longitudinal, lateral and vertical acceleration
+float fnPitch, fnRoll;                    // Create floating point variable values
 
 void setup() {
   pinMode(FL_pot_pin, INPUT);
@@ -95,6 +95,7 @@ void setup() {
 }
 
 void loop() {
+    CurrentTime = millis(); // task rate initialiser
     mpu.update();
 
     // make a string for assembling the data to log:
@@ -102,15 +103,15 @@ void loop() {
 
     // read both sensors on MPU-6050
     // Obtain Angle from Accelerometer and Gyroscope
-    xp = mpu.getAngleX();
-    yp = mpu.getAngleY();
-    zp = mpu.getAngleZ();
+    nPitch = mpu.getAngleX();
+    nRoll = mpu.getAngleY();
+    nYaw = mpu.getAngleZ();
     // Obtain Acceleration from Accelerometer
-    xa = mpu.getAccX();
-    ya = mpu.getAccY();
-    za = mpu.getAccZ();
+    gLong = mpu.getAccX();
+    gLat = mpu.getAccY();
+    gVert = mpu.getAccZ();
     // Account for Gravity
-    za = za - 1;
+    gVert = gVert - 1;
     
     ch1 = pulseIn(ch1_pin, HIGH); //channel 1 value based on pin D1 input, expecting High values with no timeout
     ch2 = pulseIn(ch2_pin, HIGH); //channel 2 value based on pin D2 input, expecting High values with no timeout
@@ -123,7 +124,7 @@ void loop() {
     constrain(rThrottlePedal,0,100);
     rBrakePedal = map(ch2,1500,1000,0,100);  //maps Brake Actuation from 0 to full from channel 2
     constrain(rBrakePedal,0,100);
-    aSteeringWheel = map(ch1,1000,2000,100,-100);
+    aSteeringWheel = map(ch1,1000,2000,100,-100); // -ve = left; +ve is right
     constrain(aSteeringWheel,-100,100);
 
     // Apply PWM according to reaction
