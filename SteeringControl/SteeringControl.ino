@@ -3,15 +3,6 @@
 #include <MPU6050_light.h>      // Include MPU 6050 library (light version used due to higher speed quoted)
 #include <SD.h>                 // Include SD card library
 
-Servo left_steer;   // Create servo object for left steer
-Servo right_steer;  // Create servo object for right steer
-
-// Assign Digital Pins
-const uint8_t ch1_pin = 1;
-const uint8_t ch2_pin = 2;
-
-const uint8_t left_steer_pin = 6;
-const uint8_t right_steer_pin = 7;
 
 const uint8_t aWheelFMap = 120;
 
@@ -33,18 +24,9 @@ int r_steer;   //create integer right steering
 
 
 void setup() {
-  // put your setup code here, to run once:
-  // Assign Servos to pins
-  left_steer.attach(left_steer_pin);                 //output left steering actuation to output 4
-  left_steer.writeMicroseconds(1000);                //initialise signal to 1 millisecond
-  right_steer.attach(right_steer_pin);               //output right steering actuator to output 5
-  right_steer.writeMicroseconds(1000);               //initialise signal to 1 millisecond 
 }
 
 void loop() {
-  // put your main code here, to run repeatedly:
-
-//  ch1 = pulseIn(ch1_pin, HIGH); //channel 1 value based on pin D1 input, expecting High values with no timeout
 // Independent Variable Steering
 {
   ch1_pwm = abs(ch1-1500);
@@ -63,10 +45,4 @@ void loop() {
     l_steer = ch1;
     r_steer = ch1;
 }
-
-// Assign Values to Servos
-  left_steer.writeMicroseconds(l_steer);
-  right_steer.writeMicroseconds(r_steer);
-
-  
 }

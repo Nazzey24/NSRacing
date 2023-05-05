@@ -1,42 +1,6 @@
-#include "Wire.h"               // Include wire library
-#include <Servo.h>              // Include servo library
-#include <MPU6050_light.h>      // Include MPU 6050 library (light version used due to higher speed quoted)
-#include <SD.h>                 // Include SD card library
-
-// Assign MPU 6050 to use Wire
-MPU6050 mpu(Wire);
-
-
-// Variables to store data from MPU-6050  // Note: Use of int to reduce sensitivity of data causing steady state oscillation due to over sensitivity
-int8_t xp;                         // Create value for Raw Pitch
-int8_t yp;                         // Create value for Raw Roll
-int8_t zp;                         // Create value for Raw Yaw
-float xa, ya, za;                  // Create floating point variable values for longitudinal, lateral and vertical acceleration
-float xpf, ypf;                    // Create floating point variable values
-
-unsigned long  CurrentTime;        // Create 32 bit value for relative time keeper
-unsigned long startMillis;         // Create 32 bit value for some time keeper for integration
-uint8_t edition;                   // Counter to ensure datalogger doesnt overlap
 boolean sussys;                    // Boolean value to check and ensure system is ready to run
 uint8_t NSuspState = 0;            // Configurable for Suspension State
 // I do want to use NCornerState to change the through corner balance and compliance
-
-uint16_t FL_pot_pin;   // Pin for FL Rotary Potentiometer
-uint16_t FR_pot_pin;   // Pin for FR Rotary Potentiometer
-uint16_t RL_pot_pin;   // Pin for RL Rotary Potentiometer
-uint16_t RR_pot_pin;   // Pin for RR Rotary Potentiometer
-
-const uint8_t FL_dec_pin = 10;  // Pin to decrease FL Position
-const uint8_t FL_inc_pin = 11;  // Pin to increase FL Position
-
-const uint8_t FR_dec_pin = 4;  // Pin to decrease FR Position
-const uint8_t FR_inc_pin = 5;  // Pin to increase FR Position
-
-const uint8_t RL_dec_pin = 6;  // Pin to decrease RL Position
-const uint8_t RL_inc_pin = 7;  // Pin to increase RL Position
-
-const uint8_t RR_dec_pin = 8;  // Pin to decrease RR Position
-const uint8_t RR_inc_pin = 9;  // Pin to increase RR Position
 
 const uint8_t roll_k = 4;         // Multiplier for roll stiffness
 const uint8_t pitch_k = 6;        // Multiplier for pitch stiffness
@@ -78,55 +42,13 @@ const int8_t k3 = 35;              // Create constant value for Constant for Pre
 const int8_t k4 = 100;             // Create constant value for Constant for Divisor to make other coefficients percentages
 
 void setup() {
-  pinMode(FL_pot_pin, INPUT);
-  pinMode(FR_pot_pin, INPUT);
-  pinMode(RL_pot_pin, INPUT);
-  pinMode(RR_pot_pin, INPUT);
-
-  pinMode(FL_dec_pin, OUTPUT);
-  pinMode(FL_inc_pin, OUTPUT);
-  digitalWrite(FL_inc_pin, HIGH);
-  digitalWrite(FL_dec_pin, HIGH);
-
-  pinMode(FR_dec_pin, OUTPUT);
-  pinMode(FR_inc_pin, OUTPUT);
-  digitalWrite(FR_inc_pin, HIGH);
-  digitalWrite(FR_dec_pin, HIGH);
-
-  pinMode(RL_dec_pin, OUTPUT);
-  pinMode(RL_inc_pin, OUTPUT);
-  digitalWrite(FL_inc_pin, HIGH);
-  digitalWrite(FL_dec_pin, HIGH);
-
-  pinMode(RR_dec_pin, OUTPUT);
-  pinMode(RR_inc_pin, OUTPUT);
-  digitalWrite(RR_inc_pin, HIGH);
-  digitalWrite(RR_dec_pin, HIGH);
 }
 
 void loop() {
-  
   if (sussys == true) && NSuspState = 0 {
     digitalWrite(LED_BUILTIN, HIGH);   // turn the LED on (HIGH is the voltage level)
-    mpu.update();
     NSuspState = 1
   }
-  
-    // make a string for assembling the data to log:
-    String dataString = "";
-
-    // read both sensors on MPU-6050
-    // Obtain Angle from Accelerometer and Gyroscope
-    xp = mpu.getAngleX();
-    yp = mpu.getAngleY();
-    zp = mpu.getAngleZ();
-    // Obtain Acceleration from Accelerometer
-    xa = mpu.getAccX();
-    ya = mpu.getAccY();
-    za = mpu.getAccZ();
-    // Account for Gravity
-    za = za - 1;
-
     // Filtered Values
     xpf = oldXp * (k1 / k4) + xp * (k2 / k4) + oldXpf * (k3 / k4);  //roll
     ypf = oldYp * (k1 / k4) + yp * (k2 / k4) + oldYpf * (k3 / k4);  //pitch
@@ -157,68 +79,6 @@ void loop() {
     int RR_error = RR_target - RR_ang;
     int RR_react = RR_error * p + (RR_error - RR_prev_error) * d;
     RR_prev_error = RR_error;
-
-    // Apply PWM according to reaction
-    if (FL_react > 0) {
-      // increase
-      analogWrite(FL_inc_pin, abs(FL_react));
-      digitalWrite(FL_dec_pin, LOW);
-    }
-    else if (FL_react < 0) {
-      // decrease
-      analogWrite(FL_dec_pin, abs(FL_react));
-      digitalWrite(FL_inc_pin, LOW);
-    }
-    else {
-      digitalWrite(FL_inc_pin, HIGH);
-      digitalWrite(FL_dec_pin, HIGH);
-    }
-
-    if (FR_react > 0) {
-      // increase
-      analogWrite(FR_inc_pin, abs(FR_react));
-      digitalWrite(FR_dec_pin, LOW);
-    }
-    else if (FR_react < 0) {
-      // decrease
-      analogWrite(FR_dec_pin, abs(FR_react));
-      digitalWrite(FR_inc_pin, LOW);
-    }
-    else {
-      digitalWrite(FR_inc_pin, HIGH);
-      digitalWrite(FR_dec_pin, HIGH);
-    }
-
-    if (RL_react > 0) {
-      // increase
-      analogWrite(RL_inc_pin, abs(RL_react));
-      digitalWrite(RL_dec_pin, LOW);
-    }
-    else if (RL_react < 0) {
-      // decrease
-      analogWrite(RL_dec_pin, abs(RL_react));
-      digitalWrite(RL_inc_pin, LOW);
-    }
-    else {
-      digitalWrite(RL_inc_pin, HIGH);
-      digitalWrite(RL_dec_pin, HIGH);
-    }
-
-    if (RR_react > 0) {
-      // increase
-      analogWrite(RR_inc_pin, abs(RR_react));
-      digitalWrite(RR_dec_pin, LOW);
-    }
-    else if (RR_react < 0) {
-      // decrease
-      analogWrite(RR_dec_pin, abs(RR_react));
-      digitalWrite(RR_inc_pin, LOW);
-    }
-    else {
-      digitalWrite(RR_inc_pin, HIGH);
-      digitalWrite(RR_dec_pin, HIGH);
-    }
-  }
   else {
     Serial.print("Error Occured");
   }
