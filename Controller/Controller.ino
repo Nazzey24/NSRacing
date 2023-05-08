@@ -1,18 +1,18 @@
-const uint16_t BrakingThresholdPWM = 1475;
+const uint8_t BrakingThresholdPWM = 5;
 const uint8_t CornerLatThresh = 1;
-const uint16_t AcceleratingThresholdPWM = 1525;
+const uint8_t AcceleratingThresholdPWM = 5;
 const uint16_t BMigMapTime[6] = {0,100,400,700,900,1000};
 const uint8_t BMigMap1[6] = {0,0,1,2,3,4};
 const uint8_t BMigMap2[6] = {0,0,1,2,4,6};
 const uint8_t BMigMap3[6] = {0,0,0,1,2,4};
-
+uint8_t BBal = 50; // gives initial percentage of brake balance 
 void setup() {
 }
 
 void loop() {
 // Active Front Differential
 {
-    if (ch2 < BrakingThresholdPWM) {
+    if (rBrakePedal < BrakingThresholdPWM) {
       CornerState = 1; // Braking
     }
     if (abs(ya) > CornerLatThresh && CornerState = 1) {
@@ -31,4 +31,5 @@ void loop() {
 
 
 // Consideration of BBal & BMig 
+
 }

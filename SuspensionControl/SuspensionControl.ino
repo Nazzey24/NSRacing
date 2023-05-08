@@ -11,9 +11,11 @@ const uint8_t roll_d = 3;         // Multiplier for roll damping
 const uint8_t pitch_d = 6;        // Multiplier for pitch damping
 const uint8_t roll_d_driver = 2;  // Multiplier for roll damping driver
 const uint8_t pitch_d_driver = 2; // Multiplier for pitch damping driver
+const uint8_t corner_k = 1;
+const uint8_t corner_d = 2;       // multiplier
 
-const uint8_t p = 1;           // Multiplier for the Single Spring Stiffness
-const uint8_t d = 2;           // Multiplier for the Single Damping Effect
+uint8_t k;               // Multiplier for the Single Spring Stiffness
+uint8_t d;               // Multiplier for the Single Damping Effect
 
 uint8_t oldgLong = 0;
 uint8_t oldfgLong = 0;
@@ -44,11 +46,12 @@ const int8_t k4 = 100;             // Create constant value for Constant for Div
 void setup() {
 }
 
-void loop() { 
+void loop() {
   if (sussys == true) && NSuspState = 0 {
     digitalWrite(LED_BUILTIN, HIGH);   // turn the LED on (HIGH is the voltage level)
     NSuspState = 1
   }
+    {
     // Filtered Values
     fgLong = oldgLong * (k1 / k4) + gLong * (k2 / k4) + oldfgLong * (k3 / k4);  //pitch
     fgLat = oldgLat * (k1 / k4) + gLat * (k2 / k4) + oldfgLat * (k3 / k4);      //roll
@@ -63,6 +66,7 @@ void loop() {
     FR_target = FR_target - (roll_multi * fgLong) + (pitch_multi * fgLat);
     RL_target = RL_target + (roll_multi * fgLong) - (pitch_multi * fgLat);
     RR_target = RR_target - (roll_multi * fgLong) - (pitch_multi * fgLat);
+    }
 
     // Compute errors, PD terms and reactions
     int FL_ang = analogRead(A0); 
@@ -84,6 +88,7 @@ void loop() {
     int RR_error = RR_target - RR_ang;
     int RR_react = RR_error * p + (RR_error - RR_prev_error) * d;
     RR_prev_error = RR_error;
+  
   else {
     Serial.print("Error Occured");
   }
